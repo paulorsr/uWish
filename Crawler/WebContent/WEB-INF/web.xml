@@ -18,6 +18,6 @@
 <!-- 		<load-on-startup>1</load-on-startup> -->
 <!-- 	</servlet> -->
 	 <listener>
-    <listener-class>main.Main</listener-class>
+    <listener-class>com.uwish.crawler.engine.Engine</listener-class>
   </listener>
 </web-app>
