@@ -3,7 +3,7 @@ package com.uwish.crawler.crawlers;
 public abstract class BaseCrawler extends Thread {
 	
 	protected boolean active;
-	private String name;
+	protected String name;
 	
 	public BaseCrawler(final String name) {
 		active = false;

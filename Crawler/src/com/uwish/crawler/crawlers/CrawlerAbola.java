@@ -2,6 +2,8 @@ package com.uwish.crawler.crawlers;
 
 import java.io.IOException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -14,17 +16,20 @@ import com.uwish.crawler.statistics.StatisticsFactory;
 
 public final class CrawlerAbola extends BaseCrawler {
 	
+	private transient static Logger log = LogManager.getLogger(CrawlerAbola.class.getName());
 	private final int searchDelay = 60000;
 	private final int callDelay = 1000;
 	
 	public CrawlerAbola() {
-		super("Abola");
+		super(CrawlerAbola.class.getName());
 	}
 	
 	@Override
 	public void run() {
-		
+
 		Statistic statistic = StatisticsFactory.getInstance().getStatistics(this);
+		
+		log.info("Starting crawler");
 		
 		while (active) {
 			
@@ -47,23 +52,25 @@ public final class CrawlerAbola extends BaseCrawler {
 						article.setAuthor(d.select("#a5g4 b").first().text());
 						if (CrawlerManager.getInstance().insertArticle(article)) {
 							statistic.incElement(Statistic.NEW_ARTICLES);
+							log.info("Article '{}' sent", article.getTitle());
 						} else {
 							statistic.incElement(Statistic.CACHED_ARTICLES);
+							log.info("Article '{}' already in cache", article.getTitle());
 						}
 					}
 				}
 			} catch (IOException e) {
 				statistic.incElement(Statistic.ERRORS);
-				System.out.println("IOException while connecting (" + e.getMessage() + ")");
+				log.error("IOException while connecting ({})", e.getMessage());
 			} catch (InterruptedException e) {
-				System.out.println("InterruptedException while connecting (" + e.getMessage() + ")");
+				log.error("InterruptedException while connecting ({})", e.getMessage());
 			} finally {
-				System.out.println(statistic);
+				log.info(statistic);
 				statistic.clear();
 				try {
 					Thread.sleep(searchDelay);
 				} catch (InterruptedException e) {
-					System.out.println("InterruptedException while sleeping thread (" + e.getMessage() + ")");
+					log.error("InterruptedException while sleeping thread ({})", e.getMessage());
 				}
 			}
 		}
